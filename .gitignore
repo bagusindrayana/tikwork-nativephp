@@ -33,3 +33,5 @@ Thumbs.db
 # Sensitive files
 *.jks
 *.keystore
+# Credential files (keystores, private keys, etc.)
+/credentials/

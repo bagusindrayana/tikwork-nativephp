@@ -67,7 +67,7 @@
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
-<body class="overflow-hidden bg-black text-white">
+<body class="overflow-hidden bg-black text-white nativephp-safe-area">
 
     <!-- App Container -->
     <div class="flex flex-col h-screen w-full relative">
@@ -110,7 +110,7 @@
         </header>
 
         <!-- ==================== MAIN CONTENT AREA ==================== -->
-        <div class="flex flex-1 lg:pt-[60px] h-full w-full">
+        <div class="flex flex-1 lg:pt-[60px] pb-[calc(var(--inset-bottom)+1rem)] h-full w-full">
 
             <!-- ==================== DESKTOP SIDEBAR ==================== -->
             <aside
@@ -172,7 +172,7 @@
 
         <!-- ==================== MOBILE BOTTOM NAV ==================== -->
         <nav
-            class="lg:hidden fixed bottom-0 w-full bg-black border-t border-gray-800 flex justify-between items-end px-4 py-2 z-50 text-[10px] text-gray-400 font-medium pb-4">
+            class="lg:hidden fixed bottom-0 w-full bg-black border-t border-gray-800 flex justify-between items-end px-4 pt-2 z-50 text-[10px] text-gray-400 font-medium pl-[var(--inset-left)] pr-[var(--inset-right)] pb-[calc(var(--inset-bottom)+1rem)]">
             <a href="{{ route('home') }}"
                 class="flex flex-col items-center gap-1 flex-1 transition {{ request()->routeIs('home') ? 'text-white' : '' }}">
                 <i class="fa-solid fa-house text-xl {{ request()->routeIs('home') ? 'text-white' : '' }}"></i>
