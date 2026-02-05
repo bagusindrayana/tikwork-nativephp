@@ -1,6 +1,7 @@
 @props(['job', 'index'])
 
-<div class="absolute inset-0 bg-[#0F172A] text-white overflow-hidden p-6 flex flex-col justify-center items-center">
+<div
+    class="absolute top-0 left-0 right-0 bottom-[var(--nav-height)] bg-[#0F172A] text-white overflow-hidden p-6 flex flex-col justify-center items-center">
 
     <!-- Background Particles -->
     <div class="absolute inset-0 opacity-20"

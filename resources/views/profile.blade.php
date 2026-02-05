@@ -42,12 +42,13 @@
                 </div>
             </div>
 
-            <div class="flex justify-end sticky bottom-1 lg:bottom-2">
-                <button @click="saveProfile()"
-                    class="bg-[#FE2C55] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-[#ef2950] active:scale-95 transition flex items-center gap-2">
-                    <i class="fa-solid fa-check"></i> Save Changes
-                </button>
-            </div>
+
+        </div>
+        <div class="flex justify-end sticky float-button px-0 pointer-events-none z-30">
+            <button @click="saveProfile()"
+                class="bg-[#FE2C55] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-[#ef2950] active:scale-95 transition flex items-center gap-2 pointer-events-auto">
+                <i class="fa-solid fa-check"></i> Save Changes
+            </button>
         </div>
         <div class="h-20 lg:hidden shrink-0"></div>
     </main>
@@ -63,14 +64,14 @@
                 },
                 availableCategories: ['Technology', 'Design', 'Marketing', 'Sales', 'Finance', 'Engineering', 'HR'],
 
-                init() {},
+                init() { },
 
                 async saveProfile() {
                     const params = {
                         name: this.profile.name,
                         categories: this.profile.categories.join(',')
                     };
-                    
+
                     try {
                         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                         const response = await fetch('/profile/update', {
@@ -82,11 +83,11 @@
                             },
                             body: JSON.stringify(params)
                         });
-                        
-                        if(response.ok) {
-                             alert('Profile saved!');
+
+                        if (response.ok) {
+                            alert('Profile saved!');
                         } else {
-                             alert('Failed to save.');
+                            alert('Failed to save.');
                         }
                     } catch (e) {
                         console.error('Save failed', e);

@@ -2,7 +2,7 @@
 
 <!-- Video Item Container -->
 <div
-    class="w-full h-[100dvh] lg:h-full lg:min-h-screen snap-center relative flex justify-center bg-black lg:border-b lg:border-gray-800 lg:py-6">
+    class="w-full h-feed lg:h-full lg:min-h-screen snap-center relative flex justify-center bg-black lg:border-b lg:border-gray-800 lg:py-6">
 
     <!-- ========== MOBILE POSTER VARIATIONS ========== -->
     <div class="w-full h-full relative lg:hidden block text-left">
@@ -10,7 +10,7 @@
         <x-dynamic-poster :job="$job" />
 
         <!-- Right Sidebar Actions (Overlay on top of poster) -->
-        <div class="absolute right-2 bottom-[100px] z-40 flex flex-col items-center gap-5 pointer-events-auto">
+        <div class="absolute right-2 bottom-14 z-40 flex flex-col items-center gap-5 pointer-events-auto">
             <!-- Avatar -->
             <div class="relative mb-3 group">
                 <div class="w-12 h-12 rounded-full border border-white/50 p-0.5 overflow-hidden bg-white shadow-md">
@@ -74,13 +74,13 @@
                 <span class="text-xs font-semibold text-shadow">Love</span>
             </div>
 
-            <button class="flex flex-col items-center gap-1 group">
+            <a class="apply" href="{{ $job['job_link'] ?? '#' }}" class="flex flex-col items-center gap-1 group">
                 <div
                     class="bg-black/20 p-2 rounded-full backdrop-blur-sm group-active:scale-90 transition hover:bg-black/40">
-                    <i class="fa-solid fa-comment-dots text-[28px] text-white drop-shadow-md"></i>
+                    <i class="fa-solid fa-paper-plane text-[28px] text-white drop-shadow-md"></i>
                 </div>
-                <span class="text-xs font-semibold text-shadow">Chat</span>
-            </button>
+                <span class="text-xs font-semibold text-shadow">Apply</span>
+            </a>
 
             <button class="flex flex-col items-center gap-1 group">
                 <div
@@ -93,7 +93,7 @@
 
         <!-- Bottom Info Area -->
         <div
-            class="absolute bottom-4 left-0 w-[80%] pl-4 pb-14 z-30 text-white text-shadow text-left pointer-events-none">
+            class="absolute bottom-4 left-0 w-[80%] pl-4 pb-12 z-30 text-white text-shadow text-left pointer-events-none">
             <h3 class="font-bold text-shadow text-lg mb-1 leading-snug drop-shadow-md">
                 {{ '@' . strtolower(str_replace(' ', '', $job['job_company_name'])) }}
             </h3>
@@ -105,6 +105,11 @@
                     class="text-sm text-gray-100 transition-all duration-300 font-medium leading-relaxed drop-shadow-md p-2 rounded-lg backdrop-blur-sm hover:bg-black/40">
                     {{ $job['job_description'] }}
                 </p>
+
+                @foreach(array_slice($job['job_category'] ?? [], 0, 2) as $cat)
+                    <span class="text-xs text-gray-300 mt-2 pl-2 font-medium" x-show="expanded"
+                        x-transition>#{{ str_replace(' ', '', $cat) }}</span>
+                @endforeach
 
                 <p x-show="expanded" x-transition class="text-xs text-gray-300 mt-2 pl-2 font-medium">
                     Posted {{ \Carbon\Carbon::parse($job['job_created_date'])->diffForHumans() }}

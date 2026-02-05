@@ -8,6 +8,7 @@ use App\Services\PosterGenerator;
 use App\Models\Favorite;
 use App\Models\Profile;
 use Log;
+use Native\Mobile\Facades\Share;
 
 class JobController extends Controller
 {
@@ -335,5 +336,14 @@ class JobController extends Controller
             'currentCategories' => $categoriesString,
             'favoriteIds' => $this->getFavoriteIds()
         ]);
+    }
+
+    public function openExternal(Request $request)
+    {
+        $request->validate([
+            'url' => 'required|url',
+        ]);
+        $url = $request->query('url');
+        Share::url('Apply Job!', 'Apply Job', $url);
     }
 }

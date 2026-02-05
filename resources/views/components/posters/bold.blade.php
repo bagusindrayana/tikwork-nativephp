@@ -10,7 +10,8 @@
     $bg = $gradients[$index % count($gradients)];
 @endphp
 
-<div class="absolute inset-0 flex flex-col p-6 justify-between {{ $bg }} text-white overflow-hidden font-mono">
+<div
+    class="absolute top-0 left-0 right-0 bottom-[var(--nav-height)] flex flex-col p-6 justify-between {{ $bg }} text-white overflow-hidden font-mono">
     <!-- Big Watermark -->
     <div class="absolute -right-10 -bottom-10 opacity-10 transform rotate-12">
         @if(!empty($job['job_company_logo']) && $job['job_company_logo'] !== 'N/A')

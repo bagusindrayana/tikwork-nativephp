@@ -2,7 +2,7 @@
 
 @section('content')
     <!-- MOBILE TOP HEADER (FIXED, Only for Home) -->
-    <div class="fixed top-0 left-0 w-full pt-8 pb-4 px-4 flex justify-between items-start z-50 text-white lg:hidden pointer-events-none"
+    <div class="fixed top-0 left-0 w-full pt-8 pb-4 px-4 flex justify-between items-start z-[100] text-white lg:hidden pointer-events-none"
         style="background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0) 100%);"
         x-data="{ showSearch: false, query: '{{ request('search') }}' }">
 
@@ -82,7 +82,7 @@
             <div id="following-feed-container" class="w-full"></div>
 
             <div x-show="followingLoading"
-                class="w-full h-24 flex items-center justify-center snap-center text-white bg-black shrink-0">
+                class="w-full h-24 flex items-center justify-center snap-center text-white bg-black shrink-0 m-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <div class="flex flex-col items-center gap-2">
                     <i class="fa-solid fa-spinner fa-spin text-2xl text-cyan-400"></i>
                     <span class="text-sm font-medium text-gray-400">Loading following...</span>

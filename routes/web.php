@@ -16,3 +16,5 @@ Route::get('/job/{id}', [JobController::class, 'viewJob'])->name('job.view');
 // Backend Logic Routes
 Route::post('/favorite/toggle', [JobController::class, 'toggleFavorite'])->name('favorite.toggle');
 Route::post('/profile/update', [JobController::class, 'updateProfile'])->name('profile.update');
+
+Route::get('/open-external', [JobController::class, 'openExternal'])->name('open.external');

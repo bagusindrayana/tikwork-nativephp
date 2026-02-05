@@ -3,12 +3,12 @@
 @section('content')
     <!-- MOBILE TOP HEADER (Explore) -->
     <div x-data="{
-                                                query: '{{ request('search') }}',
-                                                performSearch() {
-                                                    window.location.href = '{{ route('explore') }}' + '?search=' + encodeURIComponent(this.query);
-                                                }
-                                            }"
-        class="fixed top-0 left-0 w-full pt-8 pb-4 px-4 flex items-center gap-4 z-50 text-white lg:hidden bg-gradient-to-b from-black via-black/80 to-transparent pointer-events-auto">
+                                                    query: '{{ request('search') }}',
+                                                    performSearch() {
+                                                        window.location.href = '{{ route('explore') }}' + '?search=' + encodeURIComponent(this.query);
+                                                    }
+                                                }"
+        class="fixed top-0 left-0 w-full pt-8 pb-4 px-4 flex items-center gap-4 z-[100] text-white lg:hidden bg-gradient-to-b from-black via-black/80 to-transparent pointer-events-auto">
 
         <div class="relative flex-1">
             <input type="text" x-model="query" @keydown.enter="performSearch()" placeholder="Search jobs..."

@@ -10,7 +10,7 @@
 @endphp
 
 <div
-    class="absolute inset-0 flex flex-col p-8 justify-center items-center text-center {{ $bg }} text-white overflow-hidden">
+    class="absolute top-0 left-0 right-0 bottom-[var(--nav-height)] flex flex-col p-8 justify-center items-center text-center {{ $bg }} text-white overflow-hidden">
     <!-- Abstract Shapes -->
     <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
     </div>
