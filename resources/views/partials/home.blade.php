@@ -57,7 +57,8 @@
 
     <!-- FOR YOU FEED -->
     <!-- Horizontal Slider Container -->
-    <div x-ref="slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory snap-always no-scrollbar"
+    <div x-ref="slider"
+        class="w-full h-full flex overflow-x-auto snap-x snap-mandatory snap-always no-scrollbar lg:overflow-hidden lg:snap-none"
         @scroll.debounce.10ms="handleHorizontalScroll($el)">
 
         <!-- FOLLOWING FEED (Left) -->

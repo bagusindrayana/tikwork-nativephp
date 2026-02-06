@@ -132,18 +132,106 @@
     </div>
 
     <!-- ========== DESKTOP LAYOUT ========== -->
-    <div class="hidden lg:flex w-[700px] h-full gap-4 relative pr-20 items-center justify-center">
+    <div class="hidden lg:flex w-full h-full justify-center items-center gap-6 pb-4">
+
+        <!-- Video/Poster Container -->
         <div
-            class="relative h-[calc(100vh-100px)] aspect-[9/16] rounded-xl overflow-hidden shadow-2xl border border-gray-800 bg-white">
+            class="relative h-[calc(100vh-80px)] aspect-[9/16] rounded-xl overflow-hidden shadow-2xl border border-gray-800 bg-white group">
             <!-- Reusing the dynamic poster component -->
-            <div class="w-full h-full relative">
+            <div class="w-full h-full relative cursor-pointer">
                 <x-dynamic-poster :job="$job" />
             </div>
 
-            <!-- Desktop Overlay functionality could adhere here -->
+            <!-- "Apply Now" Button Overlay -->
             <a href="{{ $job['job_link'] }}" target="_blank"
-                class="absolute bottom-8 left-1/2 -translate-x-1/2 px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition shadow-lg z-20">
-                Apply Now
+                class="absolute bottom-8 left-1/2 -translate-x-1/2 px-8 py-3 bg-[#FE2C55] text-white font-bold rounded-full hover:scale-105 transition shadow-lg z-20">
+                Apply Now <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i>
+            </a>
+
+            <!-- Info Overlay (Visible on Hover or always?) Let's keep it minimal for desktop, maybe bottom gradient -->
+            <div
+                class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/60 to-transparent pointer-events-none">
+            </div>
+
+            <div class="absolute bottom-24 left-4 z-20 text-shadow pointer-events-none">
+                <h3 class="font-bold text-xl text-white drop-shadow-md mb-1">
+                    {{ '@' . strtolower(str_replace(' ', '', $job['job_company_name'])) }}
+                </h3>
+                <p class="text-white text-sm line-clamp-2 w-[80%] drop-shadow-md">{{ $job['job_description'] }}</p>
+            </div>
+        </div>
+
+        <!-- Desktop Action Buttons (Right Side) -->
+        <div class="flex flex-col gap-6 pb-4 z-20">
+            <!-- Profile Avatar -->
+            <div class="relative group cursor-pointer">
+                <div
+                    class="w-12 h-12 rounded-full border border-gray-600 p-0.5 overflow-hidden bg-black hover:scale-105 transition">
+                    @if(!empty($job['job_company_logo']) && $job['job_company_logo'] !== 'N/A')
+                        <img src="{{ $job['job_company_logo'] }}" class="w-full h-full object-contain rounded-full">
+                    @else
+                        <div
+                            class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-800 font-bold text-xs">
+                            {{ strtoupper(substr($job['job_company_name'], 0, 2)) }}
+                        </div>
+                    @endif
+                </div>
+                <div
+                    class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-[#FE2C55] rounded-full w-5 h-5 flex items-center justify-center scale-90 shadow-sm text-white">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                </div>
+            </div>
+
+            <!-- Favorite Button -->
+            <div x-data="{
+                isFavorite: false,
+                jobData: {{ Js::from($job) }},
+                init() {
+                    if (window.userFavorites) {
+                        this.isFavorite = window.userFavorites.includes(String(this.jobData.id));
+                    }
+                },
+                async toggleFavorite() {
+                    this.isFavorite = !this.isFavorite;
+                    try {
+                        const csrf = document.querySelector('meta[name=\'csrf-token\']')?.getAttribute('content');
+                        const response = await fetch('/favorite/toggle', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+                            body: JSON.stringify(this.jobData)
+                        });
+                        const res = await response.json();
+                        if (res.isFavorite !== undefined) this.isFavorite = res.isFavorite;
+                    } catch (e) {
+                        this.isFavorite = !this.isFavorite;
+                    }
+                }
+            }" class="flex flex-col items-center gap-1 cursor-pointer group">
+                <div @click="toggleFavorite()"
+                    class="w-12 h-12 rounded-full bg-[#1F1F1F] flex items-center justify-center hover:bg-[#2F2F2F] transition group-active:scale-95">
+                    <i class="text-2xl transition-colors duration-200"
+                        :class="isFavorite ? 'fa-solid fa-heart text-[#FE2C55]' : 'fa-solid fa-heart text-white'"></i>
+                </div>
+                <span class="text-xs font-semibold text-gray-400">{{ rand(100, 5000) }}</span>
+            </div>
+
+            <!-- Comment Button (Static) -->
+            <div class="flex flex-col items-center gap-1 cursor-pointer group">
+                <div
+                    class="w-12 h-12 rounded-full bg-[#1F1F1F] flex items-center justify-center hover:bg-[#2F2F2F] transition">
+                    <i class="fa-solid fa-comment-dots text-2xl text-white"></i>
+                </div>
+                <span class="text-xs font-semibold text-gray-400">{{ rand(10, 500) }}</span>
+            </div>
+
+            <!-- Share Button -->
+            <a href="{{ $job['job_link'] ?? '#' }}" target="_blank"
+                class="flex flex-col items-center gap-1 cursor-pointer group">
+                <div
+                    class="w-12 h-12 rounded-full bg-[#1F1F1F] flex items-center justify-center hover:bg-[#2F2F2F] transition">
+                    <i class="fa-solid fa-share text-2xl text-white"></i>
+                </div>
+                <span class="text-xs font-semibold text-gray-400">Share</span>
             </a>
         </div>
     </div>

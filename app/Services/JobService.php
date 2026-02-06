@@ -19,7 +19,7 @@ class JobService
             }
 
             // Attempt to fetch from the specified API
-            $response = Http::timeout(10)->get('https://tikwork-api.potadev.com/api/jobs/for-you', $params);
+            $response = Http::timeout(10)->get(env("API_URL") . '/api/jobs/for-you', $params);
 
             if ($response->successful()) {
                 return $response->json();
@@ -39,7 +39,7 @@ class JobService
                 $params['search'] = $search;
             }
 
-            $response = Http::timeout(10)->get('https://tikwork-api.potadev.com/api/jobs/explore', $params);
+            $response = Http::timeout(10)->get(env("API_URL") . '/jobs/explore', $params);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -54,7 +54,7 @@ class JobService
     public function getJobById($id)
     {
         try {
-            $response = Http::timeout(10)->get("https://tikwork-api.potadev.com/api/jobs/{$id}");
+            $response = Http::timeout(10)->get(env("API_URL") . "/jobs/{$id}");
 
             if ($response->successful()) {
                 $specificJob = $response->json();
