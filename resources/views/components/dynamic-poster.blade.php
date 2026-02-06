@@ -137,7 +137,7 @@
             </div>
 
             <!-- Main Glitch Title -->
-            <h1 class="{{ strlen($job['job_title']) > 30 ? 'text-3xl' : 'text-5xl' }} font-black uppercase leading-tight mb-8 relative">
+            <h1 class="{{ strlen($job['job_title']) > 30 ? 'text-2xl' : 'text-4xl' }} font-black uppercase leading-tight mb-8 relative">
                 <span
                     class="block absolute top-0 left-0 -ml-[2px] text-red-500 opacity-70 custom-glitch-1">{{ $job['job_title'] }}</span>
                 <span
@@ -337,7 +337,7 @@
                      <div class="absolute -left-[5px] top-0 w-2 h-2 bg-green-500"></div>
                     <div class="absolute -left-[5px] bottom-0 w-2 h-2 bg-black border border-green-500"></div>
 
-                    <h1 class="{{ strlen($job['job_title']) > 30 ? 'text-xl' : 'text-3xl' }} font-mono font-bold leading-none mb-4 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">
+                    <h1 class="{{ count(explode(" ",$job['job_title'])) > 3 ? 'text-lg' : 'text-2xl' }} font-mono font-bold leading-none mb-4 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">
                          {{ $job['job_title'] }}
                     </h1>
                      <!-- <div class="flex flex-wrap gap-2 text-xs font-mono">
@@ -383,7 +383,7 @@
                 </div>
             </div>
 
-            <h1 class="{{ strlen($job['job_title']) > 30 ? 'text-2xl' : 'text-3xl' }} font-black leading-[0.85] tracking-tighter mb-8  w-full" >
+            <h1 class="{{ count(explode(" ",$job['job_title'])) > 4 ? 'text-lg' : 'text-2xl' }} font-black leading-[0.85] tracking-tighter mb-8  w-full" >
                 {{ $job['job_title'] }}
             </h1>
 
@@ -468,7 +468,7 @@
             </div>
 
             <div class="text-center relative">
-                 <h1 class="{{ count(explode($job['job_title'],' ')) > 2 ? 'text-lg' : 'text-2xl' }} font-black text-transparent bg-clip-text bg-gradient-to-b from-cyan-300 to-blue-600 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" style="-webkit-text-stroke: 1px rgba(255,255,255,0.3);">
+                 <h1 class="{{ count(explode(' ',$job['job_title'])) > 2 ? 'text-lg' : 'text-2xl' }} font-black text-transparent bg-clip-text bg-gradient-to-b from-cyan-300 to-blue-600 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" style="-webkit-text-stroke: 1px rgba(255,255,255,0.3);">
                     {{ $job['job_title'] }}
                 </h1>
                 <div class="text-yellow-300 font-script text-4xl transform -rotate-6 mt-4 drop-shadow-[2px_2px_0px_#B91C1C]">
