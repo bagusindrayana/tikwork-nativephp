@@ -62,7 +62,7 @@
                     name: initialProfile?.name || 'User',
                     categories: initialProfile?.categories || []
                 },
-                availableCategories: ['Technology', 'Design', 'Marketing', 'Sales', 'Finance', 'Engineering', 'HR'],
+                availableCategories: ['Programmer', 'Technology', 'Design', 'Marketing', 'Sales', 'Finance', 'Engineering', 'HR', 'Developer'],
 
                 init() { },
 

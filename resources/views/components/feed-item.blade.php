@@ -1,11 +1,10 @@
 @props(['job', 'index'])
 
 <!-- Video Item Container -->
-<div
-    class="w-full h-feed lg:h-full lg:min-h-screen snap-center relative flex justify-center bg-black lg:border-b lg:border-gray-800 lg:py-6">
+<div class="w-full h-full snap-center relative flex justify-center bg-black lg:border-b lg:border-gray-800 lg:py-6">
 
     <!-- ========== MOBILE POSTER VARIATIONS ========== -->
-    <div class="w-full h-full relative lg:hidden block text-left">
+    <div class="w-full relative lg:hidden block text-left">
 
         <x-dynamic-poster :job="$job" />
 
@@ -74,7 +73,8 @@
                 <span class="text-xs font-semibold text-shadow">Love</span>
             </div>
 
-            <a class="apply" href="{{ $job['job_link'] ?? '#' }}" class="flex flex-col items-center gap-1 group">
+            <a href="{{ route("open.external", ['url' => $job['job_link'] ?? '#']) }}"
+                class="flex flex-col items-center gap-1 group">
                 <div
                     class="bg-black/20 p-2 rounded-full backdrop-blur-sm group-active:scale-90 transition hover:bg-black/40">
                     <i class="fa-solid fa-paper-plane text-[28px] text-white drop-shadow-md"></i>
@@ -82,19 +82,19 @@
                 <span class="text-xs font-semibold text-shadow">Apply</span>
             </a>
 
-            <button class="flex flex-col items-center gap-1 group">
+            <a href="{{ $job['job_link'] ?? '#' }}" class="apply flex flex-col items-center gap-1 group">
                 <div
                     class="bg-black/20 p-2 rounded-full backdrop-blur-sm group-active:scale-90 transition hover:bg-black/40">
                     <i class="fa-solid fa-share text-[28px] text-white drop-shadow-md"></i>
                 </div>
                 <span class="text-xs font-semibold text-shadow">Share</span>
-            </button>
+            </a>
         </div>
 
         <!-- Bottom Info Area -->
         <div
             class="absolute bottom-4 left-0 w-[80%] pl-4 pb-12 z-30 text-white text-shadow text-left pointer-events-none">
-            <h3 class="font-bold text-shadow text-lg mb-1 leading-snug drop-shadow-md">
+            <h3 class="font-bold text-shadow text-lg mb-1 leading-snug drop-shadow-md max-w-[90%] overflow-hidden">
                 {{ '@' . strtolower(str_replace(' ', '', $job['job_company_name'])) }}
             </h3>
 
@@ -102,8 +102,13 @@
             <div x-data="{ expanded: false }" @click="expanded = !expanded"
                 class="w-full cursor-pointer mb-2 transition-all duration-300 pointer-events-auto">
                 <p :class="expanded ? 'line-clamp-none bg-black/60' : 'line-clamp-2 bg-black/10'"
-                    class="text-sm text-gray-100 transition-all duration-300 font-medium leading-relaxed drop-shadow-md p-2 rounded-lg backdrop-blur-sm hover:bg-black/40">
-                    {{ $job['job_description'] }}
+                    class="text-sm text-gray-100 transition-all duration-300 font-medium leading-relaxed drop-shadow-md p-2 rounded-lg backdrop-blur-sm hover:bg-black/40 break-all">
+                    @if($job['job_description'] != "" && $job['job_description'] != "-")
+                        {{ $job['job_description'] }}
+                    @else
+                        {{ $job['job_title'] }} <br>
+                        {{ implode(", ", $job['job_category'] ?? []) }}
+                    @endif
                 </p>
 
                 @foreach(array_slice($job['job_category'] ?? [], 0, 2) as $cat)

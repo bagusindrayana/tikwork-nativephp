@@ -17,7 +17,7 @@ class PosterGenerator
             ['bg' => 'bg-gradient-to-bl from-rose-500 to-orange-400', 'text' => 'text-white', 'accent' => 'bg-white/20'],
             ['bg' => 'bg-gray-900', 'text' => 'text-white', 'accent' => 'bg-gray-800'],
             ['bg' => 'bg-blue-900', 'text' => 'text-blue-50', 'accent' => 'bg-blue-800'],
-            ['bg' => 'bg-white', 'text' => 'text-gray-900', 'accent' => 'bg-gray-100'],
+            // ['bg' => 'bg-white', 'text' => 'text-gray-900', 'accent' => 'bg-gray-100'],
             ['bg' => 'bg-[#F4D03F]', 'text' => 'text-black', 'accent' => 'bg-black/10'], // Yellow
             ['bg' => 'bg-[#E74C3C]', 'text' => 'text-white', 'accent' => 'bg-white/20'], // Red
             ['bg' => 'bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900', 'text' => 'text-gray-100', 'accent' => 'bg-purple-500/20'],
@@ -75,9 +75,9 @@ class PosterGenerator
             'cyber-grid',    // Terminal aesthetic
             'bold-typography', // Massive text focus
             'neobrutalism',   // Brutalist borders, high contrast
-            'retro-synth',    // 80s style
+            // 'retro-synth',    // 80s style
             'glass-modern',   // Glassmorphism
-            'meme-design'     // Chaotic "Design is my passion"
+            // 'meme-design'     // Chaotic "Design is my passion"
         ];
         $layout = $layouts[mt_rand(0, count($layouts) - 1)];
 

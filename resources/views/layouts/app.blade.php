@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover, user-scalable=no">
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>TikWork</title>
     <!-- Fonts -->
@@ -31,199 +31,101 @@
     @endif
     <style>
         :root {
-            --nav-height: 70px;
-        }
-
-        .h-feed {
-            height: calc(100dvh - var(--nav-height));
-        }
-
-        .float-button {
-            bottom: var(--nav-height);
+            --nav-height: 60px;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: black;
             color: white;
+            overscroll-behavior-y: none;
+            /* Prevent pull-to-refresh on body */
         }
 
-        /* Custom Scrollbar for sidebar */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-        }
-
-        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.4);
-        }
-
-        /* Text Shadow for overlay text */
-        .text-shadow {
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        /* Disable text selection for app-like feel */
+        .select-none {
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         [x-cloak] {
             display: none !important;
         }
 
-        /* Page Transition Animations */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .page-transition {
-            animation: slideIn 0.3s ease-out forwards;
-            width: 100%;
-            height: 100%;
+        .post-feed {
+            height: calc(100dvh - var(--nav-height));
         }
     </style>
     <!-- Alpine.js -->
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
-<body class="overflow-hidden bg-black text-white nativephp-safe-area">
+<body class="overflow-hidden bg-black text-white nativephp-safe-area select-none" x-data="appShell()">
 
     <!-- App Container -->
-    <div class="flex flex-col h-screen w-full relative">
+    <div class="flex flex-col h-[100dvh] w-full relative">
 
-        <!-- ==================== DESKTOP HEADER ==================== -->
-        <header x-data="{
-            query: '{{ request('search') }}',
-            performSearch() {
-                let route = '{{ request()->routeIs('explore') ? route('explore') : route('home') }}';
-                window.location.href = route + '?search=' + encodeURIComponent(this.query);
-            }
-        }"
+        <!-- ==================== DESKTOP HEADER (Kept for desktop view compatibility) ==================== -->
+        <header
             class="hidden lg:flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-[#121212] z-50 fixed top-0 w-full">
-            <a href="{{ route('home') }}" class="flex items-center gap-1 cursor-pointer" wire:navigate>
+            <a href="{{ route('home') }}" class="flex items-center gap-1 cursor-pointer">
                 <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-pink-500 animate-pulse"></div>
                 <span class="text-2xl font-bold tracking-tighter text-white">TikWork</span>
             </a>
-            <div class="flex-1 max-w-md mx-8 relative">
-                <input type="text" placeholder="Search jobs, companies..." x-model="query"
-                    @keydown.enter="performSearch()"
-                    class="w-full bg-[#2F2F2F] rounded-full py-3 px-4 pl-12 outline-none focus:ring-2 focus:ring-gray-600 transition text-sm text-white placeholder-gray-400">
-                <span class="absolute left-4 top-3.5 text-gray-400">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </span>
-                <button @click="performSearch()"
-                    class="absolute right-3 top-2 text-gray-400 border-l border-gray-600 pl-3 hover:bg-gray-700/50 rounded-r-full p-1">
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
+            <!-- Simplified Desktop Header -->
             <div class="flex items-center gap-4">
-                <button
-                    class="flex items-center gap-2 border border-gray-600 px-4 py-1.5 rounded-sm hover:bg-[#252525] transition font-semibold text-sm">
-                    <i class="fa-solid fa-plus"></i> <span class="hidden xl:inline">Upload</span>
-                </button>
-                <button
-                    class="bg-[#FE2C55] text-white px-6 py-1.5 rounded-sm font-bold hover:bg-[#ef2950] transition text-sm">Log
-                    in</button>
-                <button class="p-2"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <button class="bg-[#FE2C55] text-white px-6 py-1.5 rounded-sm font-bold text-sm">Log in</button>
             </div>
         </header>
 
-        <!-- ==================== MAIN CONTENT AREA ==================== -->
-        <div class="flex flex-1 lg:pt-[60px] pb-[calc(var(--inset-bottom)+1rem)] h-full w-full">
+        <!-- ==================== MAIN SHELL (Horizontal Swipe) ==================== -->
+        <!-- Justify-start to ensure items stack left-to-right -->
+        <main id="shell-container"
+            class="flex flex-1 w-full h-full overflow-x-auto snap-x snap-mandatory overflow-y-hidden no-scrollbar lg:pt-[60px]"
+            @scroll.debounce.50ms="onScroll($el)">
 
-            <!-- ==================== DESKTOP SIDEBAR ==================== -->
-            <aside
-                class="hidden lg:flex w-[240px] xl:w-[340px] flex-col overflow-y-auto border-r border-gray-800 p-2 custom-scrollbar pb-20">
-                <div class="flex flex-col gap-2 py-2 border-b border-gray-800 pb-4">
-                    <a href="{{ route('home') }}"
-                        class="flex items-center gap-3 p-3 rounded-md hover:bg-[#1F1F1F] {{ request()->routeIs('home') ? 'text-[#FE2C55]' : 'text-white' }}"
-                        wire:navigate>
-                        <i class="fa-solid fa-house text-xl w-6 text-center"></i>
-                        <span class="font-bold text-lg">For You</span>
-                    </a>
+            <!-- SECTION 1: HOME -->
+            <section id="section-home" class="w-full h-full shrink-0 snap-center overflow-hidden relative">
+                @include('partials.home')
+            </section>
 
-                    <!-- We can link following to home with query param just to separate it visually if we want, or keep it inside home -->
-                    <!-- But for sidebar nav, usually it points to specific logic. Let's keep loop for now -->
+            <!-- SECTION 2: EXPLORE -->
+            <section id="section-explore" class="w-full h-full shrink-0 snap-center overflow-hidden relative">
+                @include('partials.explore')
+            </section>
 
-                    <a href="{{ route('explore') }}"
-                        class="flex items-center gap-3 p-3 rounded-md hover:bg-[#1F1F1F] {{ request()->routeIs('explore') ? 'text-[#FE2C55]' : 'text-white' }}"
-                        wire:navigate>
-                        <i class="fa-regular fa-compass text-xl w-6 text-center"></i>
-                        <span class="font-semibold text-lg">Explore</span>
-                    </a>
-                </div>
+            <!-- SECTION 3: FAVORITES -->
+            <section id="section-favorites" class="w-full h-full shrink-0 snap-center overflow-hidden relative">
+                @include('partials.favorites')
+            </section>
 
-                <div class="py-2 border-b border-gray-800 pb-4">
-                    <a href="{{ route('favorites') }}"
-                        class="flex items-center gap-3 p-3 rounded-md hover:bg-[#1F1F1F] {{ request()->routeIs('favorites') ? 'text-[#FE2C55]' : 'text-white' }}"
-                        wire:navigate>
-                        <i class="fa-solid fa-heart text-xl w-6 text-center"></i>
-                        <span class="font-semibold text-lg">Favorites</span>
-                    </a>
-                    <a href="{{ route('profile') }}"
-                        class="flex items-center gap-3 p-3 rounded-md hover:bg-[#1F1F1F] {{ request()->routeIs('profile') ? 'text-[#FE2C55]' : 'text-white' }}"
-                        wire:navigate>
-                        <i class="fa-solid fa-user text-xl w-6 text-center"></i>
-                        <span class="font-semibold text-lg">Profile</span>
-                    </a>
-                </div>
+            <!-- SECTION 4: PROFILE -->
+            <section id="section-profile" class="w-full h-full shrink-0 snap-center overflow-hidden relative">
+                @include('partials.profile')
+            </section>
 
-                <div class="py-4">
-                    <!-- <p class="text-gray-400 text-sm font-semibold mb-4 px-2">Suggested accounts</p>
-                    @for($i = 0; $i < 5; $i++)
-                        <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-[#1F1F1F]">
-                            <div class="w-8 h-8 rounded-full bg-gray-700 shrink-0 overflow-hidden">
-                                <img src="https://i.pravatar.cc/150?u={{ $i }}" alt="User"
-                                    class="w-full h-full object-cover">
-                            </div>
-                            <div class="hidden xl:block">
-                                <h3 class="font-bold text-sm truncate text-white">user_{{ $i }}</h3>
-                                <p class="text-xs text-gray-400 truncate">Generic User {{ $i }}</p>
-                            </div>
-                        </a>
-                    @endfor -->
-                </div>
-                <div class="mt-auto py-6 px-2 text-xs text-gray-500 border-t border-gray-800">
-                    <p>© 2026 TikWork</p>
-                </div>
-            </aside>
-
-            <!-- ==================== CONTENT YIELD ==================== -->
-            <main class="page-transition w-full h-full">
-                @yield('content')
-            </main>
-
-        </div>
+        </main>
 
         <!-- ==================== MOBILE BOTTOM NAV ==================== -->
+        <!-- Note: We check activeTab === 'name' to style -->
         <nav id="navbar"
             class="lg:hidden fixed bottom-0 w-full bg-black border-t border-gray-800 flex justify-between items-end px-4 pt-2 z-50 text-[10px] text-gray-400 font-medium pl-[var(--inset-left)] pr-[var(--inset-right)] pb-[calc(var(--inset-bottom)+1rem)]">
-            <a href="{{ route('home') }}"
-                class="flex flex-col items-center gap-1 flex-1 transition {{ request()->routeIs('home') ? 'text-white' : '' }}"
-                wire:navigate>
-                <i class="fa-solid fa-house text-xl {{ request()->routeIs('home') ? 'text-white' : '' }}"></i>
-                <span class="{{ request()->routeIs('home') ? 'font-bold' : '' }}">Home</span>
-            </a>
-            <a href="{{ route('explore') }}"
-                class="flex flex-col items-center gap-1 flex-1 transition {{ request()->routeIs('explore') ? 'text-white' : '' }}"
-                wire:navigate>
-                <i
-                    class="fa-regular fa-compass text-xl {{ request()->routeIs('explore') ? 'fa-solid' : 'fa-regular' }}"></i>
-                <span class="{{ request()->routeIs('explore') ? 'font-bold' : '' }}">Explore</span>
-            </a>
-            <div
+
+            <button @click="scrollToTab('home')" class="flex flex-col items-center gap-1 flex-1 transition"
+                :class="activeTab === 'home' ? 'text-white' : ''">
+                <i class="fa-solid fa-house text-xl" :class="activeTab === 'home' ? 'text-white' : ''"></i>
+                <span :class="activeTab === 'home' ? 'font-bold' : ''">Home</span>
+            </button>
+
+            <button @click="scrollToTab('explore')" class="flex flex-col items-center gap-1 flex-1 transition"
+                :class="activeTab === 'explore' ? 'text-white' : ''">
+                <i class="text-xl"
+                    :class="activeTab === 'explore' ? 'fa-solid fa-compass' : 'fa-regular fa-compass'"></i>
+                <span :class="activeTab === 'explore' ? 'font-bold' : ''">Explore</span>
+            </button>
+
+            <!-- Create Button (Placeholder) -->
+            <button @click="alert('Coming soon!')"
                 class="relative w-12 h-8 cursor-pointer hover:scale-105 transition flex-1 flex justify-center items-center">
                 <div class="relative w-11 h-7">
                     <div class="absolute left-0 top-0 w-full h-full bg-cyan-400 rounded-lg translate-x-[-3px]"></div>
@@ -233,31 +135,103 @@
                         <i class="fa-solid fa-plus text-sm"></i>
                     </div>
                 </div>
-            </div>
-            <a href="{{ route('favorites') }}"
-                class="flex flex-col items-center gap-1 flex-1 transition {{ request()->routeIs('favorites') ? 'text-white' : '' }}"
-                wire:navigate>
+            </button>
+
+            <button @click="scrollToTab('favorites')" class="flex flex-col items-center gap-1 flex-1 transition"
+                :class="activeTab === 'favorites' ? 'text-white' : ''">
                 <div class="relative">
-                    <i
-                        class="fa-regular fa-heart text-xl {{ request()->routeIs('favorites') ? 'fa-solid' : 'fa-regular' }}"></i>
+                    <i class="text-xl"
+                        :class="activeTab === 'favorites' ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
                 </div>
-                <span class="{{ request()->routeIs('favorites') ? 'font-bold' : '' }}">Favorite</span>
-            </a>
-            <a href="{{ route('profile') }}"
-                class="flex flex-col items-center gap-1 flex-1 transition {{ request()->routeIs('profile') ? 'text-white' : '' }}"
-                wire:navigate>
-                <i
-                    class="fa-regular fa-user text-xl {{ request()->routeIs('profile') ? 'fa-solid' : 'fa-regular' }}"></i>
-                <span class="{{ request()->routeIs('profile') ? 'font-bold' : '' }}">Profile</span>
-            </a>
+                <span :class="activeTab === 'favorites' ? 'font-bold' : ''">Favorite</span>
+            </button>
+
+            <button @click="scrollToTab('profile')" class="flex flex-col items-center gap-1 flex-1 transition"
+                :class="activeTab === 'profile' ? 'text-white' : ''">
+                <i class="text-xl" :class="activeTab === 'profile' ? 'fa-solid fa-user' : 'fa-regular fa-user'"></i>
+                <span :class="activeTab === 'profile' ? 'font-bold' : ''">Profile</span>
+            </button>
         </nav>
     </div>
+
+    <!-- Global Scripts -->
     <script>
-        //dom loaded
+        // Set nav height variable
         document.addEventListener('DOMContentLoaded', function () {
-            document.documentElement.style.setProperty('--nav-height', document.getElementById("navbar").offsetHeight + 'px');
+            const nav = document.getElementById("navbar");
+            if (nav) {
+                document.documentElement.style.setProperty('--nav-height', nav.offsetHeight + 'px');
+            }
+        });
+
+        document.addEventListener('alpine:init', () => {
+            // Define User Favorites global if not set
+            if (!window.userFavorites) window.userFavorites = [];
+
+            Alpine.data('appShell', () => ({
+                activeTab: 'home',
+                tabs: ['home', 'explore', 'favorites', 'profile'],
+
+                init() {
+                    // Check URL to set initial tab
+                    const path = window.location.pathname;
+                    if (path.includes('explore')) this.activeTab = 'explore';
+                    else if (path.includes('favorites')) this.activeTab = 'favorites';
+                    else if (path.includes('profile')) this.activeTab = 'profile';
+                    else this.activeTab = 'home';
+
+                    // Scroll to initial tab
+                    this.$nextTick(() => {
+                        this.scrollToTab(this.activeTab, 'auto');
+                    });
+
+                    window.addEventListener('navigate-profile', () => {
+                        this.scrollToTab('profile');
+                    });
+                },
+
+                scrollToTab(tab, behavior = 'smooth') {
+                    this.activeTab = tab;
+                    const el = document.getElementById('section-' + tab);
+                    if (el) {
+                        el.scrollIntoView({ behavior: behavior, inline: 'start' });
+                    }
+                    this.updateUrl(tab);
+                },
+
+                onScroll(el) {
+                    const scrollLeft = el.scrollLeft;
+                    const width = el.clientWidth;
+                    const index = Math.round(scrollLeft / width);
+                    const newTab = this.tabs[index];
+
+                    if (newTab && newTab !== this.activeTab) {
+                        this.activeTab = newTab;
+                        this.updateUrl(newTab);
+
+                        // Trigger lazy loads if needed via events
+                        // window.dispatchEvent(new CustomEvent('tab-changed', { detail: newTab }));
+                    }
+                },
+
+                updateUrl(tab) {
+                    const url = tab === 'home' ? '/' : '/' + tab;
+                    // Only push state if meaningful change and not already there
+                    if (window.location.pathname !== url) {
+                        // Use replaceState to avoid cluttering history with scroll events
+                        // actually pushState is better for back button navigation between tabs
+                        // But for swipe interfaces, usually history is distinct.
+                        // Let's use replaceState for now to act like a true App, 
+                        // or pushState if we want browser back to work.
+                        // "Smart" approach: pushState if triggered by click, replace if by scroll? 
+                        // Hard to distinguish in onScroll. Let's use replaceState to keep history clean for "App" feel.
+                        history.replaceState(null, '', url);
+                    }
+                }
+            }));
         });
     </script>
+
     @yield('scripts')
 </body>
 
