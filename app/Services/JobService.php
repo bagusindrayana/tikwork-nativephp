@@ -19,10 +19,12 @@ class JobService
             }
 
             // Attempt to fetch from the specified API
-            $response = Http::timeout(10)->get(env("API_URL") . '/api/jobs/for-you', $params);
+            $response = Http::timeout(10)->get(env("API_URL") . '/jobs/for-you', $params);
 
             if ($response->successful()) {
                 return $response->json();
+            } else {
+                Log::error($response->body());
             }
         } catch (\Exception $e) {
             Log::error($e);
